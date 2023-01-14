@@ -1,0 +1,56 @@
+pipeline {
+    agent any
+    options {
+        disableConcurrentBuilds(abortPrevious: true)
+    }
+    stages {
+        stage('Prepare Scripts') {
+            steps {
+                sh '''
+                cd ~/workspace/tema12/cmd/
+                sudo chmod -R u+x local
+                cd local
+                sudo sed -i -e 's/\r$//' create.sh
+                sudo sed -i -e 's/\r$//' prepare.sh
+                sudo sed -i -e 's/\r$//' run.sh
+                sudo sed -i -e 's/\r$//' destroy.sh
+                '''
+            }
+        }   
+        stage('Create Remote Instance') {
+            steps {
+                sh '''
+                cd ~/workspace/tema12/cmd/local/
+                sudo ./create.sh
+                '''
+            }
+        }    
+        stage('Prepare Remote Instance') {
+            steps {
+                echo 'Sleeping...'
+                sleep(120)
+                echo 'Waking Up...'
+                sh '''
+                cd ~/workspace/tema12/cmd/local/
+                sudo ./prepare.sh
+                '''
+            }
+        }  
+        stage('Run App') {
+            steps {
+                sh '''
+                cd ~/workspace/tema12/cmd/local/
+                sudo ./run.sh
+                '''
+            }
+        }    
+        stage('Destroy Remote Instance') {
+            steps {
+                sh '''
+                cd ~/workspace/tema12/cmd/local/
+                sudo ./destroy.sh
+                '''
+            }    
+        }
+    }
+}

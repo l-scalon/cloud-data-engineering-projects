@@ -1,0 +1,1 @@
+docker exec mysql /usr/bin/mysqlcheck -u root --password=%1 --auto-repair --optimize contabyx

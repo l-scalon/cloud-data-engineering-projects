@@ -1,0 +1,40 @@
+version: '3.7'
+
+services:
+    elasticsearch:
+        container_name: elasticsearch
+        image: docker.elastic.co/elasticsearch/elasticsearch:7.13.2
+        environment: 
+            discovery.type: single-node
+            ES_JAVA_OPTS: -Xmx256m -Xms256m
+        ports: 
+            - 9200:9200   
+            - 9300:9300
+
+    kibana:
+        container_name: kibana
+        image: docker.elastic.co/kibana/kibana:7.13.2
+        depends_on:
+            - elasticsearch
+        ports:
+            - 5601:5601
+            
+    logstash:
+        container_name: logstash
+        image: docker.elastic.co/logstash/logstash:7.13.2
+        volumes:
+            - type: bind
+              source: ./logstash/pipeline/
+              target: /etc/logstash/confs
+              read_only: true
+            - ./logstash/output:/output
+        command: logstash -f /etc/logstash/confs/logstash.conf
+        environment:
+            LS_JAVA_OPTS: -Xmx256m -Xms256m
+        ports: 
+            - "5044:5044"
+            - "5000:5000/tcp"
+            - "5000:5000/udp"
+            - "9600:9600"
+        depends_on: 
+            - elasticsearch

@@ -1,0 +1,65 @@
+pipeline {
+    agent any
+    options {
+        disableConcurrentBuilds(abortPrevious: true)
+    }
+    stages {    
+        stage('Test') {
+            steps {
+                echo 'This should be a test...'
+                /*
+                sh '''
+                cd ~/workspace/tema10/TrilhaDevOpsandCloudBasics/tema10/cmd/
+                sudo chmod u+x test.sh
+                sudo ./test.sh
+                '''
+            */    
+            }
+        }
+        stage('Prepare') {
+            steps {
+                sh '''
+                cd ~/workspace/tema10/TrilhaDevOpsandCloudBasics/tema10/cmd/
+                sudo chmod u+x prepare.sh
+                sudo ./prepare.sh
+                '''
+            }
+        }    
+        stage('Build Image') {
+            steps {
+                sh '''
+                cd ~/workspace/tema10/TrilhaDevOpsandCloudBasics/tema10/app/
+                sudo chmod u+x build.sh
+                sudo ./build.sh
+                '''
+            }
+        }    
+        stage('Create Container') {
+            steps {
+                sh '''
+                cd ~/workspace/tema10/TrilhaDevOpsandCloudBasics/tema10/cmd/
+                sudo chmod u+x create.sh
+                sudo ./create.sh
+                '''
+            }
+        }    
+        stage('Cleanup') {
+            steps {
+                sh '''
+                cd ~/workspace/tema10/TrilhaDevOpsandCloudBasics/tema10/cmd/
+                sudo chmod u+x cleanup.sh
+                sudo ./cleanup.sh
+                '''
+            }    
+        }
+        stage('Reboot') {
+            steps {
+                sh '''
+                cd ~/workspace/tema10/TrilhaDevOpsandCloudBasics/tema10/cmd/
+                sudo chmod u+x restart.sh
+                sudo ./restart.sh &
+                '''
+            }    
+        }
+    }
+}

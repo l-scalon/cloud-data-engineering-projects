@@ -1,0 +1,8 @@
+CREATE PROCEDURE `analyze_all` ()
+BEGIN
+ANALYZE TABLE Clients;
+ANALYZE TABLE Documents;
+ANALYZE TABLE Tax;
+ANALYZE TABLE Transactions;
+ANALYZE TABLE Transfers;
+END

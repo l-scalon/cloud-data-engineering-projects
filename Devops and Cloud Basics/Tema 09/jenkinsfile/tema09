@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Prepare') {
+            steps {
+                sh '''
+                cd ~/workspace/tema09/TrilhaDevOpsandCloudBasics/tema09/Scripts/crontab/
+                chmod u+x prepare.sh
+                sudo ./prepare.sh
+                sudo mkdir -p /home/ec2-user/tema09/
+                sudo mkdir -p /home/ec2-user/test/tema09/
+                sudo cp -f -r ~/workspace/tema09/TrilhaDevOpsandCloudBasics/tema09/* /home/ec2-user/test/tema09/
+                '''
+            }
+        }
+        stage('Test') {
+            steps {
+                sh'''
+                sudo chmod u+x /home/ec2-user/test/tema09/Scripts/crontab/prepare.sh
+                sudo /home/ec2-user/test/tema09/Scripts/crontab/prepare.sh
+                sudo /home/ec2-user/venv/bin/python /home/ec2-user/test/tema09/Scripts/test.py
+                '''
+            }
+        }
+        stage('Deploy') {
+            steps {
+                sh '''
+                sudo cp -f -r ~/workspace/tema09/TrilhaDevOpsandCloudBasics/tema09/* /home/ec2-user/tema09/
+                sudo chmod u+x /home/ec2-user/tema09/Scripts/crontab/run.sh
+                '''
+            }
+        }
+    }
+}
